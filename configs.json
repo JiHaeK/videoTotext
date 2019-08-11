@@ -1,0 +1,43 @@
+{
+	"resize_origin":
+	{
+		"standard_width": 1280,
+		"standard_height": 720
+	},
+	"gradient": 
+	{
+		"kernel_size_row":5,
+		"kernel_size_col":5
+	},
+	"threshold": 
+	{
+		"mode": "mean",
+		"block_size":3,
+		"subtract_val": 15
+
+	},
+	"remove_line":
+	{
+		"threshold": 200,
+		"min_line_length": 53, 
+		"max_line_gap": 200
+	},
+	"remove_short_line":
+	{
+		"threshold": 127,
+		"min_line_length": 2, 
+		"max_line_gap": 10
+	},	
+	"close": 
+	{
+		"kernel_size_row": 25,
+		"kernel_size_col": 1
+	},
+	"contour":
+	{
+		"min_width": 4,
+		"min_height": 4,
+		"retrieve_mode": 0,
+		"approx_method": 2
+	}
+}
