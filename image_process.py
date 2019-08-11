@@ -5,25 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np 
 
 
-# origin_img=Image.open('../ocr/video/output/frame530.png')
-# area = (10, 5, 500, 120)
-# cropped_img = origin_img.crop(area)
-
-# origin_img.show()
-# cropped_img.show()
-
-def im_trim (img) :
-	x=10; y=5;
-	w=400; h=120;
-	img_trim = img[y:y+h, x:x+w]
-	cv2.imwrite('org_trim.jpg', img_trim)
-	return img_trim
-
-# cv2.imshow('org_img', org_img)
-# cv2.imshow('trim_img', trim_img)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
 # ============== ver 1.0 start ==================
 
 
@@ -114,10 +95,10 @@ def get_threshold(image_gray):
 
 	return image_threshold
 
-def get_global_threshold(image_gray, threshold_value=127):
-	copy = image_gray.copy()  # copy the image to be processed
-	_, binary_image = cv2.threshold(copy, threshold_value, 255, cv2.THRESH_BINARY)
-	return binary_image
+# def get_global_threshold(image_gray, threshold_value=127):
+# 	copy = image_gray.copy()  # copy the image to be processed
+# 	_, binary_image = cv2.threshold(copy, threshold_value, 255, cv2.THRESH_BINARY)
+# 	return binary_image
 
 def get_otsu_threshold(image_gray):
 	copy = image_gray.copy()
@@ -133,21 +114,6 @@ def remove_long_line(image_binary):
 	threshold = configs['remove_line']['threshold']
 	min_line_length = configs['remove_line']['min_line_length']
 	max_line_gap = configs['remove_line']['max_line_gap']
-
-	lines = cv2.HoughLinesP(copy, 1, np.pi / 180, threshold, np.array([]), min_line_length, max_line_gap)
-	if lines is not None: 
-		for line in lines:
-			x1, y1, x2, y2 = line[0]
-			cv2.line(copy, (x1, y1), (x2, y2), (0, 0, 0), 2)
-	return copy 
-
-def remove_short_line(image_binary):
-	copy = image_binary.copy()
-
-	global configs 
-	threshold = configs['remove_short_line']['threshold']
-	min_line_length = configs['remove_short_line']['min_line_length']
-	max_line_gap = configs['remove_short_line']['max_line_gap']
 
 	lines = cv2.HoughLinesP(copy, 1, np.pi / 180, threshold, np.array([]), min_line_length, max_line_gap)
 	if lines is not None: 
@@ -179,6 +145,7 @@ def get_contours(image):
 	# _, contours = cv2.findContours(image, retrieve_mode, approx_method)
 
 	# print(hierachy)
+	
 	return contours
 
 def draw_contour_rect(image_origin, contours):
@@ -197,13 +164,7 @@ def draw_contour_rect(image_origin, contours):
 			box = cv2.boxPoints(rect)
 			box = np.int0(box)
 			# print(box[0])
-			cv2.drawContours(rgb_copy, [box], 0, (0, 255, 0), 3)
-
-
-
-		# x, y, width, height = cv2.boundingRect(contour)
-		# if width > min_width and height > min_height:
-		# 	cv2.rectangle(rgb_copy, (x, y), (x + width, y + height), (0, 255, 0), 2)
+			cv2.drawContours(rgb_copy, [box], 0, (0, 255, 0), 2)
 
 	return rgb_copy
 
@@ -334,14 +295,48 @@ def ver2Convert(trim_img):
 	plt.show()
 
 
+def image_all_process(imgae_file):
+	gray = get_gray(imgae_file)
+	# cv2.imshow('gray', gray)
+
+	gray1 = get_gradient(gray)
+	# cv2.imshow('gray1', gray1)
+
+	gray2 = get_threshold(gray1)
+	# cv2.imshow('gray2', gray2)
+
+	gray3 = get_closing(gray2)
+	# cv2.imshow('gray3', gray3)
+
+	# gray4 = remove_line(gray3)
+	# cv2.imshow('gray4', gray4)
+
+	contours = get_contours(gray3)
+
+	return get_cropped_images(imgae_file, contours)
+
+
+# def get_image_with_contours(imgae_file):
+# 	gray = get_gray(imgae_file)
+
+# 	gray1 = get_gradient(gray)
+
+# 	gray2 = get_threshold(gray1)
+
+# 	gray3 = get_closing(gray2)
+
+# 	contours = get_contours(gray3)
+# 	image_with_contours = draw_contour_rect(image_origin, contours)
+
 
 # ============== stop ==================
 
 
 if __name__ == '__main__':
-	org_img = cv2.imread('../ocr/video/output/frame530.png')
-	trim_img = im_trim(org_img)
-	ver2Convert(trim_img)
+	# org_img = cv2.imread('../ocr/video/output/frame530.png')
+	# trim_img = im_trim(org_img)
+	# ver2Convert(trim_img)
+	main()
 
 
 

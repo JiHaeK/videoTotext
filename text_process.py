@@ -15,8 +15,8 @@ def text_pre_process(result):
 
 
 
-def text_save(final_result):
-	f = open('output.csv', 'w', encoding='utf-8', newline='')
+def text_save(final_result, path):
+	f = open(path, 'w', encoding='utf-8', newline='')
 	wr = csv.writer(f)
 	wr.writerow(['index', 'start_time', 'end_time', 'contents'])
 

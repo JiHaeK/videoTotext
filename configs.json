@@ -6,14 +6,14 @@
 	},
 	"gradient": 
 	{
-		"kernel_size_row":5,
-		"kernel_size_col":5
+		"kernel_size_row":2,
+		"kernel_size_col":2
 	},
 	"threshold": 
 	{
 		"mode": "mean",
-		"block_size":3,
-		"subtract_val": 15
+		"block_size":5,
+		"subtract_val": 8
 
 	},
 	"remove_line":
@@ -30,13 +30,13 @@
 	},	
 	"close": 
 	{
-		"kernel_size_row": 25,
-		"kernel_size_col": 1
+		"kernel_size_row": 20,
+		"kernel_size_col": 19
 	},
 	"contour":
 	{
-		"min_width": 4,
-		"min_height": 4,
+		"min_width": 100,
+		"min_height": 30,
 		"retrieve_mode": 0,
 		"approx_method": 2
 	}
