@@ -5,12 +5,13 @@ import json
 
 def text_pre_process(result):
 	copy = str(result)
-	copy2 = copy.replace("\n", "")
-	text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', copy2)
+	copy2 = copy.replace("\n", "").replace(' ', '')
+	text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!『「』\\‘|\(\)\[\]\<\>`\'…》]', '', copy2)
+	text = re.sub(r'\d','',text)
 	if text is None or len(text) < 2:
 		return '' 
 	else : 
-		# print(result)
+		print(text)
 		return text
 
 
@@ -54,11 +55,3 @@ def text_save(final_result, path):
 		wr.writerow([j, final_content[j]["start"],  final_content[j]["end"],  final_content[j]["contents"]])
 	
 	f.close()
-
-		# for j in range(0, len(final_result)):
-		# 	count=0
-		# 	if index[j] == index[j+1]:
-		# 		count+=1
-		# 	else :
-		# 		break
-		# 
