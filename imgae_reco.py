@@ -15,6 +15,5 @@ def extract_text(tmp_image):
 
 	return result
 
-
 if __name__ == "__main__":
-	main()
+	pass

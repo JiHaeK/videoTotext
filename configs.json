@@ -1,8 +1,8 @@
 {
 	"resize_origin":
 	{
-		"standard_width": 1280,
-		"standard_height": 720
+		"standard_width": 512,
+		"standard_height": 512
 	},
 	"gradient": 
 	{
@@ -11,31 +11,31 @@
 	},
 	"threshold": 
 	{
-		"mode": "mean",
-		"block_size":5,
-		"subtract_val": 8
+		"mode": "gaussian",
+		"block_size":19,
+		"subtract_val": 22
 
 	},
 	"remove_line":
 	{
 		"threshold": 200,
-		"min_line_length": 53, 
-		"max_line_gap": 200
+		"min_line_length": 100, 
+		"max_line_gap": 5
 	},
 	"remove_short_line":
 	{
-		"threshold": 127,
-		"min_line_length": 2, 
-		"max_line_gap": 10
+		"threshold": 100,
+		"min_line_length": 100, 
+		"max_line_gap": 5
 	},	
 	"close": 
 	{
-		"kernel_size_row": 20,
-		"kernel_size_col": 19
+		"kernel_size_row": 9,
+		"kernel_size_col": 5
 	},
 	"contour":
 	{
-		"min_width": 100,
+		"min_width": 150,
 		"min_height": 30,
 		"retrieve_mode": 0,
 		"approx_method": 2
