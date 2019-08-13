@@ -123,13 +123,20 @@ def get_contours(image):
 	global configs
 	retrieve_mode = configs['contour']['retrieve_mode']
 	approx_method = configs['contour']['approx_method']
-
+	min_width = configs['contour']['min_width']
+	min_height = configs['contour']['min_height']
 	contours, hierachy= cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
+	final_contours=[]
+	for con in contours:
+		x, y, width, height = cv2.boundingRect(con)  # top-left vertex coordinates (x,y) , width, height
+		if width > min_width and height > min_height:
+			final_contours.append(con)
+
 	# _, contours = cv2.findContours(image, retrieve_mode, approx_method)
 
 	# print(hierachy)
 	
-	return contours
+	return final_contours
 
 def draw_contour_rect(image_origin, contours):
 	rgb_copy = image_origin.copy()
@@ -197,10 +204,10 @@ def image_all_process(imgae_file):
 	gray3 = get_closing(gray2)
 	cv2.imshow('gray3', gray3)
 
-	gray4 = remove_long_line(gray3)
-	cv2.imshow('gray4', gray4)
+	# gray4 = remove_long_line(gray3)
+	# cv2.imshow('gray4', gray4)
 
-	contours = get_contours(gray4)
+	contours = get_contours(gray3)
 	print(len(contours))
 
 	cv2.imshow('All contours', draw_contour_rect(imgae_file, contours))

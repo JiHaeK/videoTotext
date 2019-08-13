@@ -1,4 +1,16 @@
 # videoTotext
+## 프로젝트 개요
+
+### 동영상에서 세부 글자(자막, 타이틀) 추출
+* OpenCV 를 이용하여 여섯 단계의 이미지처리를 통해 글자로 추정되는 부분을 찾기
+* 딥러닝 Image Classification 을 통해서 찾은 부분이 글자인지 아닌지 판단
+* OCR 엔진을 통해 글자이미지에서 TEXT 추출
+
+### 개발환경
+* Python 
+* OpenCV
+* Tesseract (OCR engine)
+
 
 ## video_process.py
 #### Introduction
@@ -6,7 +18,6 @@
 
 * 동영상에서 프레임 추출하기 (1frame per 1s)
 * 프레임 저장 하기 
-
 
 
 ## imgae_process.py
