@@ -4,15 +4,8 @@ from PIL import Image
 import numpy as np 
 
 
-# ============== ver 1.0 start ==================
-
 
 def read_configs(json_file):
-	"""
-	.json 파일을 읽어서 configuration 객체를 갖습니다. 
-	:param json_file: 
-	:return: 읽은 configuration 을 담고 있는 dictionary 형태로 반환 
-	"""
 	with open('configs.json', 'r', encoding='utf-8') as outfile:
 		d = json.load(outfile)
 	global configs 
@@ -90,16 +83,11 @@ def get_threshold(image_gray):
 
 	return image_threshold
 
-# def get_global_threshold(image_gray, threshold_value=127):
-# 	copy = image_gray.copy()  # copy the image to be processed
-# 	_, binary_image = cv2.threshold(copy, threshold_value, 255, cv2.THRESH_BINARY)
-# 	return binary_image
-
-# def get_otsu_threshold(image_gray):
-# 	copy = image_gray.copy()
-# 	blur = cv2.GaussianBlur(copy, (5, 5), 0)
-# 	ret3, imgae_otsu = cv2.threshold(copy, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-# 	return imgae_otsu
+def get_otsu_threshold(image_gray):
+	copy = image_gray.copy()
+	blur = cv2.GaussianBlur(copy, (5, 5), 0)
+	ret3, imgae_otsu = cv2.threshold(copy, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	return imgae_otsu
 
 
 def remove_long_line(image_binary):
@@ -166,11 +154,6 @@ def draw_contour_rect(image_origin, contours):
 
 
 def get_cropped_images(image_origin, contours):
-	"""
-	:param image_origin: 원본 이미지
-	:param contours: 잘라낼 contour 리스트
-	:return: contours 를 기반으로 잘라낸 이미지(OpenCV image 객체) 리스트
-	"""
 	image_copy = image_origin.copy()
 	global configs
 	min_width = configs['contour']['min_width']
@@ -196,96 +179,6 @@ def get_cropped_images(image_origin, contours):
 	return cropped_images
 
 
-
-
-# def ver1Convert(trim_img):
-# 	imggray = cv2.cvtColor(trim_img, cv2.COLOR_BGR2GRAY)
-# 	ret, img_binary = cv2.threshold(imggray, 127, 255, 0)
-# 	contours, hierachy= cv2.findContours(img_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-
-# 	print(len(contours))
-# 	c0 = contours[0]
-# 	# cv2.drawContours(imggray, [cnt0], 0, (0, 255, 0), 2)
-# 	# outside = (55, 70)
-# 	# inside = (149, 150)
-
-
-# 	epsilon1 = 0.01*cv2.arcLength(c0, True)
-# 	epsilon2 = 0.05*cv2.arcLength(c0, True)
-
-# 	approx1 = cv2.approxPolyDP(c0, epsilon1, True)
-# 	approx2 = cv2.approxPolyDP(c0, epsilon2, True)
-
-
-# 	origin_img1 = cv2.drawContours(trim_img, [c0], -1, 7) 
-# 	origin_img2 = cv2.drawContours(trim_img, [approx1], -1, 7)
-# 	origin_img3 = cv2.drawContours(trim_img, [approx2], -1, 7)
-
-
-# 	titles = ['Original', '$\epsilon=0.01$', '$\epsilon=0.05$']
-# 	images = [origin_img1, origin_img2, origin_img3]
-
-# 	for i in range(3):
-# 	    plt.subplot(1, 3, i+1)
-# 	    plt.title(titles[i])
-# 	    plt.imshow(images[i], cmap='gray')
-# 	    plt.axis('off')
-
-# 	plt.tight_layout()
-# 	plt.show()
-
-# # ============== stop ==================
-
-
-
-# # ============== ver 2.0 start ==================
-# def ver2Convert(trim_img):
-# 	imggray = cv2.cvtColor(trim_img, cv2.COLOR_BGR2GRAY)
-# 	# ret, img_binary = cv2.threshold(imggray, 127, 255, 0)
-# 	ret, img_binary = cv2.threshold(imggray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-# 	img_blur = cv2.GaussianBlur(img_binary, (3, 3), 0)
-# 	ret, img_result = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-	
-# 	# ret, img_new_result = cv2.adaptiveThreshold(imggray, 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2)
-
-# 	cv2.imshow('trim_img', trim_img)
-# 	cv2.imshow('gray', img_binary)
-# 	cv2.imshow('blur', img_result)
-# 	# cv2.imshow('img_new_result', img_new_result)
-
-# 	cv2.waitKey(0)
-
-# 	contours, hierachy= cv2.findContours(img_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-
-# 	print(len(contours))
-# 	# c0 = contours[0]
-# 	# cv2.drawContours(imggray, [cnt0], 0, (0, 255, 0), 2)
-# 	# outside = (55, 70)
-# 	# inside = (149, 150)
-
-# 	for cnt in contours : 
-# 		epsilon1 = 0.01*cv2.arcLength(cnt, True)
-# 		epsilon2 = 0.05*cv2.arcLength(cnt, True)
-
-# 		approx1 = cv2.approxPolyDP(cnt, epsilon1, True)
-# 		approx2 = cv2.approxPolyDP(cnt, epsilon2, True)
-
-# 		origin_img1 = cv2.drawContours(trim_img, [cnt], -1, 7) 
-# 		origin_img2 = cv2.drawContours(trim_img, [approx1], -1, 7)
-# 		origin_img3 = cv2.drawContours(trim_img, [approx2], -1, 7)
-
-
-# 	titles = ['Original', '$\epsilon=0.01$', '$\epsilon=0.05$']
-# 	images = [origin_img1, origin_img2, origin_img3]
-
-# 	for i in range(3):
-# 	    plt.subplot(1, 3, i+1)
-# 	    plt.title(titles[i])
-# 	    plt.imshow(images[i], cmap='gray')
-# 	    plt.axis('off')
-
-# 	plt.tight_layout()
-# 	plt.show()
 
 
 def image_all_process(imgae_file):
@@ -317,8 +210,6 @@ def image_all_process(imgae_file):
 
 	return get_cropped_images(imgae_file, contours)
 
-
-# ============== stop ==================
 
 
 if __name__ == '__main__':

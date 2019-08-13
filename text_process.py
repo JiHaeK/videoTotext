@@ -23,9 +23,6 @@ def text_save(final_result, path):
 
 	num = 1
 
-	# final_result=[' 。 해다만들었다로 매 잔빼고그 8 0미0아치여시르게ㅜ디 111  네『「은 해00ㅣ 01 」제때 져 어져000 __4을이60000드시 7 은ㄴㅅㅅ  43 ㅎ 0110', 
-	# ' 。 해다만들었다로 매 잔빼고그 8 0미0아치여시르게ㅜ디 111  네『「은 해00ㅣ 01 」제때 져 어져000 __4을이60000드시 7 은ㄴㅅㅅ  43 ㅎ 0110',
-	# 'hello', 'hello', 'hi', 'konmonginad', 'knosdf sdfw', 'sdfasdfasdf', 'sdfasdfasdf']
 	final_result_copy=final_result
 	index=[]
 

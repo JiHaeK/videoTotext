@@ -37,20 +37,7 @@ def main():
             final_result = final_result + txt.text_pre_process(result)
         fianl_result_array.append(final_result)
         
-    txt.text_save(fianl_result_array, 'amazing_output.csv')
-    # for frame in frame_images:
-    #     final_result=''
-    #     i = 0
-    #     cropped_images = ct.image_all_process(frame)
-    #     for con in cropped_images :
-    #         vp.save_image(con, "/croped/crop_" + str(i))
-    #         result = reco.extract_text(con)
-    #         final_result = final_result + txt.text_pre_process(result)
-            
-    #     fianl_result_array.append(final_result)
-    #     i += 1
-    # txt.text_save(fianl_result_array, 'amazing_output.csv')
-
+    txt.text_save(fianl_result_array, 'output/amazing_output.csv')
 
 
 if __name__ == "__main__":
