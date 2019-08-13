@@ -1,9 +1,9 @@
 import cv2
-from PIL import Image
 import imgae_reco as reco
 import image_process as ct 
 import text_process as txt
 import datetime
+import config
 
 def extract_image_fps(video_path) :
 	frame_images=[]
@@ -33,9 +33,6 @@ def extract_image_fps(video_path) :
 
 	vidcap.release()
 	return frame_images
-def convert_matrix_to_img(matrix):
-	img = Image.fromarray(matrix, 'RGB')
-	return img
 
 def save_image(image, count):
 	f_name = 'frame' + str(count)

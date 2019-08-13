@@ -11,7 +11,7 @@
 	},
 	"threshold": 
 	{
-		"mode": "gaussian",
+		"mode": "fasdf",
 		"block_size":5,
 		"subtract_val": 12
 
@@ -19,7 +19,7 @@
 	"remove_line":
 	{
 		"threshold": 200,
-		"min_line_length": 100, 
+		"min_line_length": 200, 
 		"max_line_gap": 5
 	},
 	"close": 
@@ -29,8 +29,8 @@
 	},
 	"contour":
 	{
-		"min_width": 100,
-		"min_height": 20,
+		"min_width": 50,
+		"min_height": 10,
 		"retrieve_mode": 0,
 		"approx_method": 2
 	}
