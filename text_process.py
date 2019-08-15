@@ -5,21 +5,21 @@ import json
 
 def text_pre_process(result):
 	copy = str(result)
-	copy2 = copy.replace("\n", "").replace(' ', '')
-	text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!『「』\\‘|\(\)\[\]\<\>`\'…》]', '', copy2)
-	text = re.sub(r'\d','',text)
-	if text is None or len(text) < 2:
+
+	copy2 = copy.replace("\n", "").replace(' ','')
+	text = re.sub('[-=+,#}/\{:^$.@*\"※~&%ㆍ!『「』\\‘|\(\)\[\]\<\>`\'…》]', '', copy2)
+	text2 = re.sub(r'\d','',text)
+	if text2 is None or len(text) < 2:
 		return '' 
 	else : 
-		print(text)
-		return text
+		# print(text2)
+		return text2
 
 
-
-def text_save(final_result, path):
+def text_save(final_result, section, path):
 	f = open(path, 'w', encoding='utf-8', newline='')
 	wr = csv.writer(f)
-	wr.writerow(['index', 'start_time', 'end_time', 'contents'])
+	wr.writerow(['index', 'start_time', 'end_time', 'section', 'contents'])
 
 	num = 1
 
@@ -47,11 +47,12 @@ def text_save(final_result, path):
 			pass
 		else :
 			d_content.update([("start", time.strftime("%H:%M:%S", time.gmtime(i))), 
-				("end", time.strftime("%H:%M:%S", time.gmtime(i+index.count(i)))) , 
+				("end", time.strftime("%H:%M:%S", time.gmtime(i+index.count(i)))) ,
+				('section', section[i]), 
 				("contents", final_result_copy[i])])
 			final_content.append(d_content)
 
 	for j in range(0, len(final_content)):
-		wr.writerow([j, final_content[j]["start"],  final_content[j]["end"],  final_content[j]["contents"]])
+		wr.writerow([j, final_content[j]["start"],  final_content[j]["end"], final_content[j]["section"], final_content[j]["contents"]])
 	
 	f.close()

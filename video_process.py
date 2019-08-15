@@ -19,7 +19,7 @@ def extract_image_fps(video_path) :
 		vidcap.set(cv2.CAP_PROP_POS_MSEC, (count*1000))
 		success, image = vidcap.retrieve()
 
-		print('{}.sec reading a new frame: {}'.format(count, success))
+		# print('{}.sec reading a new frame: {}'.format(count, success))
 
 		frame_exists, curr_frame = vidcap.read()
 		if frame_exists:
