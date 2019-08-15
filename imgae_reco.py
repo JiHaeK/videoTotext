@@ -1,6 +1,5 @@
 import pytesseract
 import cv2
-
 # import tensorflow as tf
 import config
 
@@ -14,7 +13,6 @@ def extract_text(tmp_image):
 	result = pytesseract.image_to_string(gray, lang=config.RECO_CONFIG['lang'], config=config.RECO_CONFIG['custom_oem_psm_config'])
 	# print('Origin Result \n' + result )
 	return result
-
 
 # def judge_text():
 # 	hello = tf.constant('Hello, TensorFlow!')

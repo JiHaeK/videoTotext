@@ -33,9 +33,6 @@ def extract_image_fps(video_path) :
 
 	vidcap.release()
 	return frame_images
-def convert_matrix_to_img(matrix):
-	img = Image.fromarray(matrix, 'RGB')
-	return img
 
 def save_image(image, count):
 	f_name = 'frame' + str(count)

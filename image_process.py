@@ -1,47 +1,28 @@
 import json
 import cv2
-from PIL import Image
 import numpy as np 
-
-
-# ============== ver 1.0 start ==================
-
-
-def read_configs(json_file):
-	"""
-	.json 파일을 읽어서 configuration 객체를 갖습니다. 
-	:param json_file: 
-	:return: 읽은 configuration 을 담고 있는 dictionary 형태로 반환 
-	"""
-	with open('configs.json', 'r', encoding='utf-8') as outfile:
-		d = json.load(outfile)
-	global configs 
-	configs = d
-	
-	return d
+import config
 
 
 def resize(image, flag=-1):
-	global configs
-	standard_height = configs['resize_origin']['standard_height']
-	standard_width = configs['resize_origin']['standard_width']
+	standard_height = config.IMAGE_CONFIG['resize_origin']['standard_height']
+	standard_width = config.IMAGE_CONFIG['resize_origin']['standard_width']
 
 	height, width = image.shape[:2]
 	image_copy = image.copy()
 	# print original size (width, height)
-	print("origin (width : " + str(width) + ", height : " + str(height) + ")")
+	# print("origin (width : " + str(width) + ", height : " + str(height) + ")")
 	rate = 1  # default
 	if (flag < 0 and height < standard_height) or (flag < 0 and height > standard_height):  # Resize based on height
 		rate = standard_height / height
 	elif (flag < 0 and width < standard_width) or (flag < 0 and height > standard_height):  # Resize based on width
 		rate = standard_width / width
 
-	# resize
 	w = round(width * rate)  # should be integer
 	h = round(height * rate)  # should be integer
 	image_copy = cv2.resize(image_copy, (w, h))
 	# print modified size (width, height)
-	print("after resize : (width : " + str(w) + ", height : " + str(h) + ")")
+	# print("after resize : (width : " + str(w) + ", height : " + str(h) + ")")
 	return image_copy
 
 
@@ -50,21 +31,20 @@ def get_gray(image_origin):
 	image_gray = cv2.cvtColor(copy, cv2.COLOR_BGR2GRAY)
 	return image_gray
 
-def get_canny(image_gray):
-	copy = image_gray.copy()
-	kernel_size = 5
-	blur_gray = cv2.GaussianBlur(copy, (3, 3), 0)
-	low_threshold = 50
-	high_threshold = 150
-	edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
-	return edges
+# def get_canny(image_gray):
+# 	copy = image_gray.copy()
+# 	kernel_size = config.IMAGE_CONFIG['canny']['kernel_size']
+# 	blur_gray = cv2.GaussianBlur(copy, (kernel_size, kernel_size), 0)
+# 	low_threshold = 50
+# 	high_threshold = 150
+# 	edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
+# 	return edges
 
 def get_gradient(image_gray):
 	copy = image_gray.copy()
 
-	global configs
-	kernel_size_row = configs['gradient']['kernel_size_row']
-	kernel_size_col = configs['gradient']['kernel_size_col']
+	kernel_size_row = config.IMAGE_CONFIG['gradient']['kernel_size_row']
+	kernel_size_col = config.IMAGE_CONFIG['gradient']['kernel_size_col']
 
 	kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size_row, kernel_size_col))
 
@@ -74,10 +54,9 @@ def get_gradient(image_gray):
 def get_threshold(image_gray): 
 	copy = image_gray.copy()
 
-	global configs
-	mode = configs['threshold']['mode']
-	block_size = configs['threshold']['block_size']
-	subtract_val = configs['threshold']['subtract_val']
+	mode = config.IMAGE_CONFIG['threshold']['mode']
+	block_size = config.IMAGE_CONFIG['threshold']['block_size']
+	subtract_val = config.IMAGE_CONFIG['threshold']['subtract_val']
 
 	if mode == 'mean':
 		image_threshold = cv2.adaptiveThreshold(copy, 255, 
@@ -90,96 +69,130 @@ def get_threshold(image_gray):
 
 	return image_threshold
 
-# def get_global_threshold(image_gray, threshold_value=127):
-# 	copy = image_gray.copy()  # copy the image to be processed
-# 	_, binary_image = cv2.threshold(copy, threshold_value, 255, cv2.THRESH_BINARY)
-# 	return binary_image
-
-# def get_otsu_threshold(image_gray):
-# 	copy = image_gray.copy()
-# 	blur = cv2.GaussianBlur(copy, (5, 5), 0)
-# 	ret3, imgae_otsu = cv2.threshold(copy, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-# 	return imgae_otsu
+def get_otsu_threshold(image_gray):
+	copy = image_gray.copy()
+	blur = cv2.GaussianBlur(copy, (5, 5), 0)
+	ret3, imgae_otsu = cv2.threshold(copy, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	return imgae_otsu
 
 
-def remove_long_line(image_binary):
-	copy = image_binary.copy()
+# def remove_long_line(image_binary):
+# 	copy = image_binary.copy()
 
-	global configs 
-	threshold = configs['remove_line']['threshold']
-	min_line_length = configs['remove_line']['min_line_length']
-	max_line_gap = configs['remove_line']['max_line_gap']
+# 	threshold = config.IMAGE_CONFIG['remove_line']['threshold']
+# 	min_line_length = config.IMAGE_CONFIG['remove_line']['min_line_length']
+# 	max_line_gap = config.IMAGE_CONFIG['remove_line']['max_line_gap']
 
-	lines = cv2.HoughLinesP(copy, 1, np.pi / 180, threshold, np.array([]), min_line_length, max_line_gap)
-	if lines is not None: 
-		for line in lines:
-			x1, y1, x2, y2 = line[0]
-			cv2.line(copy, (x1, y1), (x2, y2), (0, 0, 0), 2)
-	return copy 
+# 	lines = cv2.HoughLinesP(copy, 1, np.pi / 180, threshold, min_line_length, max_line_gap)
+# 	if lines is not None: 
+# 		for line in lines:
+# 			x1, y1, x2, y2 = line[0]
+# 			cv2.line(copy, (x1, y1), (x2, y2), (0, 0, 0), 2)
+# 	return copy 
 
 def get_closing(image_gray):
 	copy = image_gray.copy()
-	global configs
 
-	kernel_size_row = configs['close']['kernel_size_row']
-	kernel_size_col = configs['close']['kernel_size_col']
-
-	kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size_row, kernel_size_col))
-
+	kernel_size_row = config.IMAGE_CONFIG['close']['kernel_size_row']
+	kernel_size_col = config.IMAGE_CONFIG['close']['kernel_size_col']
+	kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size_row, kernel_size_col))
 	image_close = cv2.morphologyEx(copy, cv2.MORPH_CLOSE, kernel)
 	return image_close
 
 
 def get_contours(image):
+	min_width = config.IMAGE_CONFIG['contour']['min_width']
+	min_height = config.IMAGE_CONFIG['contour']['min_height']
+	section_x = config.IMAGE_CONFIG['contour']['section_x']
+	section_y = config.IMAGE_CONFIG['contour']['section_y']
 
-	global configs
-	retrieve_mode = configs['contour']['retrieve_mode']
-	approx_method = configs['contour']['approx_method']
-
-	contours, hierachy= cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-	# _, contours = cv2.findContours(image, retrieve_mode, approx_method)
-
+	contours, hierachy= cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	# contours, hierachy = cv2.findContours(image, retrieve_mode, approx_method)
 	# print(hierachy)
-	
-	return contours
+	all_contour={}
+	final_contours=[]
+	section_contour=[]
+	for i, con in enumerate(contours) :
+		x, y, width, height = cv2.boundingRect(con)
+		if width > min_width and height > min_height:
+			if x < section_x < x+width and y < section_y < y+height:
+				section_contour.append(con)
+			else:
+				final_contours.append(con)
+	all_contour["contours"]=final_contours
+	all_contour["section"]=section_contour
+	print(len(all_contour["section"]))
+
+	# print(all_contour)
+	return all_contour
 
 def draw_contour_rect(image_origin, contours):
 	rgb_copy = image_origin.copy()
+	draw_contour = contours["contours"]
+	draw_sectoin = contours["section"]
 
-	global configs 
-	min_width = configs['contour']['min_width']
-	min_height = configs['contour']['min_height']
+	min_width = config.IMAGE_CONFIG['contour']['min_width']
+	min_height = config.IMAGE_CONFIG['contour']['min_height']
 
-	if len(contours) == 0:
-		print('contours: 0')
-		return image_copy
+	if len(draw_contour) == 0:
+		# print('contours: 0')
+		return rgb_copy
 	else : 
-		for contour in contours:
+		for contour in draw_contour:
 			rect = cv2.minAreaRect(contour)
 			box = cv2.boxPoints(rect)
 			box = np.int0(box)
 			# print(box[0])
 			cv2.drawContours(rgb_copy, [box], 0, (0, 255, 0), 2)
-
+		for contour in draw_sectoin:
+			rect = cv2.minAreaRect(draw_sectoin[0])
+			box = cv2.boxPoints(rect)
+			box = np.int0(box)
+			cv2.drawContours(rgb_copy, [box], 0, (0, 0, 255), 2)
+			
 	return rgb_copy
 
 
-
 def get_cropped_images(image_origin, contours):
-	"""
-	:param image_origin: 원본 이미지
-	:param contours: 잘라낼 contour 리스트
-	:return: contours 를 기반으로 잘라낸 이미지(OpenCV image 객체) 리스트
-	"""
 	image_copy = image_origin.copy()
-	global configs
-	min_width = configs['contour']['min_width']
-	min_height = configs['contour']['min_height']
-	padding = 1
-	origin_height, origin_width = image_copy.shape[:2]
-	cropped_images = [] 
+	min_width = config.IMAGE_CONFIG['contour']['min_width']
+	min_height = config.IMAGE_CONFIG['contour']['min_height']
+	padding = config.IMAGE_CONFIG['contour']['padding']
 
-	for contour in contours:  # Crop the screenshot with on bounding rectangles of contours
+	origin_height, origin_width = image_copy.shape[:2]
+	all_cropped={}
+	cropped_images = []
+	cropped_section=[]
+	
+	draw_contour = contours["contours"]
+	draw_section = contours["section"]
+
+	# ======= test =====
+	# count = 0 
+	# for contour in contours:
+	# 	x, y, width, height = cv2.boundingRect(contour)
+	# 	if not (0 < width): 
+	# 		print("skip" + str(width) + " - " + str(height))
+	# 		continue
+	# 	count = count+1
+	# 	cropped = image_copy[y: y + height, x: x + width]
+	# 	cropped_images.append(cropped)
+	# return cropped_images
+
+	# ======= test =====
+	# count = 0 
+	# for contour in contours:
+	# 	x, y, width, height = cv2.boundingRect(contour)
+	# 	if not (0 < width): 
+	# 		print("skip" + str(width) + " - " + str(height))
+	# 		continue
+	# 	count = count+1
+	# 	cropped = image_copy[y: y + height, x: x + width]
+	# 	cropped_images.append(cropped)
+	# return cropped_images
+
+	# ========= original ========
+	for contour in draw_contour:  # Crop the screenshot with on bounding rectangles of contours
 		x, y, width, height = cv2.boundingRect(contour)  # top-left vertex coordinates (x,y) , width, height
 		# screenshot that are larger than the standard size
 		
@@ -193,140 +206,55 @@ def get_cropped_images(image_origin, contours):
 			# Crop the image with Numpy Array
 			cropped = image_copy[row_from: row_to, col_from: col_to]
 			cropped_images.append(cropped)  # add to the list
-	return cropped_images
-
-
-
-
-# def ver1Convert(trim_img):
-# 	imggray = cv2.cvtColor(trim_img, cv2.COLOR_BGR2GRAY)
-# 	ret, img_binary = cv2.threshold(imggray, 127, 255, 0)
-# 	contours, hierachy= cv2.findContours(img_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-
-# 	print(len(contours))
-# 	c0 = contours[0]
-# 	# cv2.drawContours(imggray, [cnt0], 0, (0, 255, 0), 2)
-# 	# outside = (55, 70)
-# 	# inside = (149, 150)
-
-
-# 	epsilon1 = 0.01*cv2.arcLength(c0, True)
-# 	epsilon2 = 0.05*cv2.arcLength(c0, True)
-
-# 	approx1 = cv2.approxPolyDP(c0, epsilon1, True)
-# 	approx2 = cv2.approxPolyDP(c0, epsilon2, True)
-
-
-# 	origin_img1 = cv2.drawContours(trim_img, [c0], -1, 7) 
-# 	origin_img2 = cv2.drawContours(trim_img, [approx1], -1, 7)
-# 	origin_img3 = cv2.drawContours(trim_img, [approx2], -1, 7)
-
-
-# 	titles = ['Original', '$\epsilon=0.01$', '$\epsilon=0.05$']
-# 	images = [origin_img1, origin_img2, origin_img3]
-
-# 	for i in range(3):
-# 	    plt.subplot(1, 3, i+1)
-# 	    plt.title(titles[i])
-# 	    plt.imshow(images[i], cmap='gray')
-# 	    plt.axis('off')
-
-# 	plt.tight_layout()
-# 	plt.show()
-
-# # ============== stop ==================
-
-
-
-# # ============== ver 2.0 start ==================
-# def ver2Convert(trim_img):
-# 	imggray = cv2.cvtColor(trim_img, cv2.COLOR_BGR2GRAY)
-# 	# ret, img_binary = cv2.threshold(imggray, 127, 255, 0)
-# 	ret, img_binary = cv2.threshold(imggray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-# 	img_blur = cv2.GaussianBlur(img_binary, (3, 3), 0)
-# 	ret, img_result = cv2.threshold(img_blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+			
+	x, y, width, height = cv2.boundingRect(draw_section[0])
+	row_from = (y - padding) if (y - padding) > 0 else y
+	row_to  = (y + height + padding) if (y + height + padding) < origin_height else y + height
+	col_from = (x - padding) if (x - padding) > 0 else x 
+	col_to = (x + width + padding) if (x + width + padding) < origin_width else x + width
+	cropped_section = image_copy[row_from: row_to, col_from: col_to]
 	
-# 	# ret, img_new_result = cv2.adaptiveThreshold(imggray, 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 2)
-
-# 	cv2.imshow('trim_img', trim_img)
-# 	cv2.imshow('gray', img_binary)
-# 	cv2.imshow('blur', img_result)
-# 	# cv2.imshow('img_new_result', img_new_result)
-
-# 	cv2.waitKey(0)
-
-# 	contours, hierachy= cv2.findContours(img_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-
-# 	print(len(contours))
-# 	# c0 = contours[0]
-# 	# cv2.drawContours(imggray, [cnt0], 0, (0, 255, 0), 2)
-# 	# outside = (55, 70)
-# 	# inside = (149, 150)
-
-# 	for cnt in contours : 
-# 		epsilon1 = 0.01*cv2.arcLength(cnt, True)
-# 		epsilon2 = 0.05*cv2.arcLength(cnt, True)
-
-# 		approx1 = cv2.approxPolyDP(cnt, epsilon1, True)
-# 		approx2 = cv2.approxPolyDP(cnt, epsilon2, True)
-
-# 		origin_img1 = cv2.drawContours(trim_img, [cnt], -1, 7) 
-# 		origin_img2 = cv2.drawContours(trim_img, [approx1], -1, 7)
-# 		origin_img3 = cv2.drawContours(trim_img, [approx2], -1, 7)
+	all_cropped["contours"]=cropped_images
+	all_cropped["section"]=cropped_section
+	
+	return all_cropped
 
 
-# 	titles = ['Original', '$\epsilon=0.01$', '$\epsilon=0.05$']
-# 	images = [origin_img1, origin_img2, origin_img3]
-
-# 	for i in range(3):
-# 	    plt.subplot(1, 3, i+1)
-# 	    plt.title(titles[i])
-# 	    plt.imshow(images[i], cmap='gray')
-# 	    plt.axis('off')
-
-# 	plt.tight_layout()
-# 	plt.show()
+def save_crooped_contours(image, count):
+	f_name = 'output/contours/contour_' + str(count)
+	file_path = f_name + ".jpg"  # complete file name
+	cv2.imwrite(file_path, image)
+	
 
 
 def image_all_process(imgae_file):
 	gray = get_gray(imgae_file)
-	cv2.imshow('gray', gray)
+	# cv2.imshow('gray', gray)
 
 	# canny = get_canny(gray)
 	# cv2.imshow('canny', canny)
 
 	gray1 = get_gradient(gray)
-	cv2.imshow('gray1', gray1)
+	# cv2.imshow('gray1', gray1)
 
 	gray2 = get_threshold(gray1)
-	cv2.imshow('gray2', gray2)
+	# cv2.imshow('gray2', gray2)
 
 	gray3 = get_closing(gray2)
-	cv2.imshow('gray3', gray3)
+	# cv2.imshow('gray3', gray3)
 
-	gray4 = remove_long_line(gray3)
-	cv2.imshow('gray4', gray4)
+	# gray4 = remove_long_line(gray3)
+	# cv2.imshow('gray4', gray4)
 
-	contours = get_contours(gray4)
-	print(len(contours))
+	contours = get_contours(gray3)
+	# print(len(contours["section"]))
 
-	cv2.imshow('All contours', draw_contour_rect(imgae_file, contours))
+	# cv2.imshow('All contours', draw_contour_rect(imgae_file, contours))
 
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 
 	return get_cropped_images(imgae_file, contours)
 
-
-# ============== stop ==================
-
-
 if __name__ == '__main__':
 	pass
-
-
-
-
-
-
-

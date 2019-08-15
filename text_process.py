@@ -5,27 +5,24 @@ import json
 
 def text_pre_process(result):
 	copy = str(result)
-
-	copy2 = copy.replace("\n", "").replace(' ','')
+	copy2 = copy.replace("\n", "").replace(' ', '')
 	text = re.sub('[-=+,#}/\{:^$.@*\"※~&%ㆍ!『「』\\‘|\(\)\[\]\<\>`\'…》]', '', copy2)
 	text2 = re.sub(r'\d','',text)
 	if text2 is None or len(text) < 2:
 		return '' 
 	else : 
-		# print(text2)
+		print(text2)
 		return text2
 
 
-def text_save(final_result, section, path):
+
+def text_save(final_result, path):
 	f = open(path, 'w', encoding='utf-8', newline='')
 	wr = csv.writer(f)
-	wr.writerow(['index', 'start_time', 'end_time', 'section', 'contents'])
+	wr.writerow(['index', 'start_time', 'end_time', 'contents'])
 
 	num = 1
 
-	# final_result=[' 。 해다만들었다로 매 잔빼고그 8 0미0아치여시르게ㅜ디 111  네『「은 해00ㅣ 01 」제때 져 어져000 __4을이60000드시 7 은ㄴㅅㅅ  43 ㅎ 0110', 
-	# ' 。 해다만들었다로 매 잔빼고그 8 0미0아치여시르게ㅜ디 111  네『「은 해00ㅣ 01 」제때 져 어져000 __4을이60000드시 7 은ㄴㅅㅅ  43 ㅎ 0110',
-	# 'hello', 'hello', 'hi', 'konmonginad', 'knosdf sdfw', 'sdfasdfasdf', 'sdfasdfasdf']
 	final_result_copy=final_result
 	index=[]
 
@@ -47,12 +44,11 @@ def text_save(final_result, section, path):
 			pass
 		else :
 			d_content.update([("start", time.strftime("%H:%M:%S", time.gmtime(i))), 
-				("end", time.strftime("%H:%M:%S", time.gmtime(i+index.count(i)))) ,
-				('section', section[i]), 
+				("end", time.strftime("%H:%M:%S", time.gmtime(i+index.count(i)))) , 
 				("contents", final_result_copy[i])])
 			final_content.append(d_content)
 
 	for j in range(0, len(final_content)):
-		wr.writerow([j, final_content[j]["start"],  final_content[j]["end"], final_content[j]["section"], final_content[j]["contents"]])
+		wr.writerow([j, final_content[j]["start"],  final_content[j]["end"],  final_content[j]["contents"]])
 	
 	f.close()
