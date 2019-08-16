@@ -226,7 +226,7 @@ def get_cropped_images(image_origin, contours):
 		cropped = image_copy[row_from: row_to, col_from: col_to]
 		cropped_images.append(cropped)  # add to the list
 			
-	x, y, width, height = cv2.boundingRect(draw_section[0])
+	x, y, width, height = cv2.boundingRect(draw_section)
 	row_from = (y - padding) if (y - padding) > 0 else y
 	row_to  = (y + height + padding) if (y + height + padding) < origin_height else y + height
 	col_from = (x - padding) if (x - padding) > 0 else x 

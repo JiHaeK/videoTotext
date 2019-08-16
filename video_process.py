@@ -1,6 +1,5 @@
 import cv2
 from PIL import Image
-import imgae_reco as reco
 import image_process as ct 
 import text_process as txt
 import datetime

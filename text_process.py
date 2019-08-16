@@ -12,14 +12,14 @@ def text_pre_process(result):
 	"""	
 	copy = str(result)
 	copy2 = copy.replace("\n", "").replace(' ', '')
-	text = re.sub('[-=+,#}/\{:^$.@*\"※~&%ㆍ!『「』\\‘|\(\)\[\]\<\>`\'…》]', '', copy2)
+	text = re.sub('[-=+,#}/\{:^$.@*\※~&%ㆍ!『「』\\‘|\(\)\[_ ""\]\<\>`\'…》]', '', copy2)
 	shortword = re.compile(r'\W*\b\w{1,2}\b')
 	shortword.sub('', text)
 	text2 = re.sub(r'\d','',text)
 	if text2 is None or len(text) < 2:
 		return '' 
 	else : 
-		print(text2)
+		# print(text2)
 		return text2
 
 

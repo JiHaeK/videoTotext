@@ -1,6 +1,6 @@
 import video_process as vp
 import image_process as ct 
-import imgae_reco as reco
+import image_reco as reco
 import text_process as txt
 import cv2
 
@@ -25,7 +25,7 @@ def main():
 # =================== 동영상 테스트 ================================
     fianl_result_array=[]
     section_result_array=[]
-    video_path='test_video/amazing_720p.mp4'
+    video_path='test_video/3sisekki.mp4'
     frame_images = vp.extract_frame_from_video(video_path)
     for i, frame in enumerate(frame_images):
         vp.save_image(frame,i)
@@ -41,7 +41,7 @@ def main():
         # print(len(cropped_images["section"]))
         section = reco.extract_text(cropped_images["section"])
         section_result_array.append(section)
-    txt.text_save(fianl_result_array, section_result_array, 'output/new_amazing_output.csv')
+    txt.text_save(fianl_result_array, section_result_array, 'output/3sisekki_output.csv')
 
 
 if __name__ == "__main__":
