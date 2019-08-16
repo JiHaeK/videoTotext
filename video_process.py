@@ -5,7 +5,13 @@ import image_process as ct
 import text_process as txt
 import datetime
 
-def extract_image_fps(video_path) :
+def extract_frame_from_video(video_path) :
+	"""
+	비디오에서 1초당 하나의 프레임을 추출합니다.  
+
+	:param video_path: 동영상 경로 
+	:return: 프레임들이 저장되어 있는 배열 
+	"""
 	frame_images=[]
 	vidcap = cv2.VideoCapture(video_path)
 	fps = vidcap.get(cv2.CAP_PROP_FPS)
@@ -35,6 +41,12 @@ def extract_image_fps(video_path) :
 	return frame_images
 
 def save_image(image, count):
+	"""
+	추출한 프레임 이미지를 저장합니다. 
+	
+	:param image: 프레임 
+	:param count: 초   
+	"""
 	f_name = 'frame' + str(count)
 	file_path = f_name + ".jpg"  # complete file name
 	cv2.imwrite(file_path, image)

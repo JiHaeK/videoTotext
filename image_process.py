@@ -5,6 +5,13 @@ import config
 
 
 def resize(image, flag=-1):
+	"""
+	비디오에서 1초당 하나의 프레임을 추출합니다.
+
+	:param image: 프레임의 cv2 이미지 객체 
+	:param flag: flag < 0(default)이면 사이즈를 증가, flag > 0 이면 사이즈를 축소
+	:return: 사이즈가 조정된 이미지 
+	"""
 	standard_height = config.IMAGE_CONFIG['resize_origin']['standard_height']
 	standard_width = config.IMAGE_CONFIG['resize_origin']['standard_width']
 
@@ -18,8 +25,8 @@ def resize(image, flag=-1):
 	elif (flag < 0 and width < standard_width) or (flag < 0 and height > standard_height):  # Resize based on width
 		rate = standard_width / width
 
-	w = round(width * rate)  # should be integer
-	h = round(height * rate)  # should be integer
+	w = round(width * rate) 
+	h = round(height * rate)  
 	image_copy = cv2.resize(image_copy, (w, h))
 	# print modified size (width, height)
 	# print("after resize : (width : " + str(w) + ", height : " + str(h) + ")")
@@ -27,20 +34,22 @@ def resize(image, flag=-1):
 
 
 def get_gray(image_origin):
+	""" image 객체를 인자로 받아서 Gray-scale 을 적용한 2차원 이미지 객체로 반환합니다.
+	
+	:param image_origin: OpenCV 의 BGR image 객체 (3 dimension)
+	:return: gray-scale 이 적용된 image 객체 (2 dimension)
+	"""
 	copy = image_origin.copy()
 	image_gray = cv2.cvtColor(copy, cv2.COLOR_BGR2GRAY)
 	return image_gray
 
-# def get_canny(image_gray):
-# 	copy = image_gray.copy()
-# 	kernel_size = config.IMAGE_CONFIG['canny']['kernel_size']
-# 	blur_gray = cv2.GaussianBlur(copy, (kernel_size, kernel_size), 0)
-# 	low_threshold = 50
-# 	high_threshold = 150
-# 	edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
-# 	return edges
 
 def get_gradient(image_gray):
+	""" 이미지에 Dilation 과 Erosion 을 적용하여 그 차이를 이용해 윤곽선을 추출합니다.
+
+	:param image_gray: gray-scale 이 적용된 image 객체 (2 dimension)
+	:return: image_gradient: 윤관선 추출한 결과 이미지 (Opencv 이미지)
+	"""
 	copy = image_gray.copy()
 
 	kernel_size_row = config.IMAGE_CONFIG['gradient']['kernel_size_row']
@@ -52,6 +61,13 @@ def get_gradient(image_gray):
 	return image_gradient
 
 def get_threshold(image_gray): 
+	""" 이미지에 Threshold 를 적용해서 흑백(Binary) 이미지객체를 반환합니다.
+	configs 에 적용된 threshold mode 에 따라 mean adaptive threshold / gaussian adaptive threshold
+    를 적용할 수 있습니다. 
+
+	:param image_gray: gray-scale 이 적용된 image 객체 (2 dimension)
+	:return: image_gradient: Threshold 적용한 흑백(Binary) 이미지 (Opencv 이미지)
+	"""
 	copy = image_gray.copy()
 
 	mode = config.IMAGE_CONFIG['threshold']['mode']
@@ -91,6 +107,14 @@ def get_otsu_threshold(image_gray):
 # 	return copy 
 
 def get_closing(image_gray):
+	""" 이미지에 Morph Close 를 적용한 이미지객체를 반환합니다.
+	이미지에 Dilation 수행을 한 후 Erosion 을 수행한 것입니다.
+	이 때 인자로 입력되는 이미지는 Gray-scale 이 적용된 2차원 이미지여야 합니다.
+	configs 에 의해 kernel size 값을 설정할 수 있습니다.
+	
+	:param image_gray: Gray-scale 이 적용된 OpenCV image (2 dimension)
+	:return: Morph Close 를 적용한 흑백(Binary) 이미지
+	"""
 	copy = image_gray.copy()
 
 	kernel_size_row = config.IMAGE_CONFIG['close']['kernel_size_row']
@@ -101,6 +125,14 @@ def get_closing(image_gray):
 
 
 def get_contours(image):
+	""" 이미지에서 contour를 추출해 반환합니다.
+	이미지 처리(Image processing) 단계를 거친 후 contour 를 잘 추출할 수 있습니다.
+	왼쪽 상단 위의 점을 포함한 곳을 섹션구역으로 지정합니다. (config에서 점 위치 변경 가능)
+	크기가 40x10 이하인 것은 contour로 뽑지 않습니다. (config에서 기준 사이즈 변경 가능)
+
+	:param image: 전처리가 끝난 OpenCV의 image 객체 (2 dimension)
+    :return: 이미지에서 추출한 contours (dictonary)
+    """
 	min_width = config.IMAGE_CONFIG['contour']['min_width']
 	min_height = config.IMAGE_CONFIG['contour']['min_height']
 	section_x = config.IMAGE_CONFIG['contour']['section_x']
@@ -127,6 +159,14 @@ def get_contours(image):
 	return all_contour
 
 def draw_contour_rect(image_origin, contours):
+	""" 사각형의 Contour 를 이미지 위에 그려서 반환합니다.
+    찾은 Contours들의 영역을 감싸는 외각 사각형을 그립니다. 
+	섹션 - 빨간색 사각형, 나머지 - 초록색 사각형
+
+    :param image_origin: OpenCV의 image 객체
+    :param contours: 이미지 위에 그릴 contour 딕셔너리
+    :return: 사각형의 Contour 를 그린 이미지
+    """
 	rgb_copy = image_origin.copy()
 	draw_contour = contours["contours"]
 	draw_sectoin = contours["section"]
@@ -154,6 +194,13 @@ def draw_contour_rect(image_origin, contours):
 
 
 def get_cropped_images(image_origin, contours):
+	""" 이미지에서 찾은 Contour 부분들을 잘라내어 반환합니다.
+    각 contour 를 감싸는 외각 사각형에 여유분(padding)을 주어 이미지를 잘라냅니다.
+
+    :param image_origin: 원본 이미지
+    :param contours: 잘라낼 contour 딕셔너리
+    :return: contours 를 기반으로 잘라낸 이미지(OpenCV image 객체) 딕셔너리
+    """
 	image_copy = image_origin.copy()
 	min_width = config.IMAGE_CONFIG['contour']['min_width']
 	min_height = config.IMAGE_CONFIG['contour']['min_height']
@@ -167,45 +214,17 @@ def get_cropped_images(image_origin, contours):
 	draw_contour = contours["contours"]
 	draw_section = contours["section"]
 
-	# ======= test =====
-	# count = 0 
-	# for contour in contours:
-	# 	x, y, width, height = cv2.boundingRect(contour)
-	# 	if not (0 < width): 
-	# 		print("skip" + str(width) + " - " + str(height))
-	# 		continue
-	# 	count = count+1
-	# 	cropped = image_copy[y: y + height, x: x + width]
-	# 	cropped_images.append(cropped)
-	# return cropped_images
-
-	# ======= test =====
-	# count = 0 
-	# for contour in contours:
-	# 	x, y, width, height = cv2.boundingRect(contour)
-	# 	if not (0 < width): 
-	# 		print("skip" + str(width) + " - " + str(height))
-	# 		continue
-	# 	count = count+1
-	# 	cropped = image_copy[y: y + height, x: x + width]
-	# 	cropped_images.append(cropped)
-	# return cropped_images
-
-	# ========= original ========
 	for contour in draw_contour:  # Crop the screenshot with on bounding rectangles of contours
 		x, y, width, height = cv2.boundingRect(contour)  # top-left vertex coordinates (x,y) , width, height
-		# screenshot that are larger than the standard size
-		
-		if width > min_width and height > min_height:
-		# The range of row to crop (with padding)
-			row_from = (y - padding) if (y - padding) > 0 else y
-			row_to = (y + height + padding) if (y + height + padding) < origin_height else y + height
-			# The range of column to crop (with padding)
-			col_from = (x - padding) if (x - padding) > 0 else x
-			col_to = (x + width + padding) if (x + width + padding) < origin_width else x + width
-			# Crop the image with Numpy Array
-			cropped = image_copy[row_from: row_to, col_from: col_to]
-			cropped_images.append(cropped)  # add to the list
+
+		row_from = (y - padding) if (y - padding) > 0 else y
+		row_to = (y + height + padding) if (y + height + padding) < origin_height else y + height
+		# The range of column to crop (with padding)
+		col_from = (x - padding) if (x - padding) > 0 else x
+		col_to = (x + width + padding) if (x + width + padding) < origin_width else x + width
+		# Crop the image with Numpy Array
+		cropped = image_copy[row_from: row_to, col_from: col_to]
+		cropped_images.append(cropped)  # add to the list
 			
 	x, y, width, height = cv2.boundingRect(draw_section[0])
 	row_from = (y - padding) if (y - padding) > 0 else y
@@ -220,19 +239,26 @@ def get_cropped_images(image_origin, contours):
 	return all_cropped
 
 
-def save_crooped_contours(image, count):
-	f_name = 'output/contours/contour_' + str(count)
-	file_path = f_name + ".jpg"  # complete file name
-	cv2.imwrite(file_path, image)
+# def save_crooped_contours(image, count):
+# 	""" 잘라낸 Contour 부분들을 저장합니다.
+
+#   :param image: 잘라낸 contour 이미지 
+# 	:param count: 잘라낸 contour 순서 
+# 	"""
+# 	f_name = 'output/contours/contour_' + str(count)
+# 	file_path = f_name + ".jpg"  # complete file name
+# 	cv2.imwrite(file_path, image)
 	
 
 
 def image_all_process(imgae_file):
+	""" 5단계의 이미지 전처리를 실행합니다.
+
+    :param image_file: 프레임 이미지 파일(BGR image)
+    :return: contours 를 기반으로 잘라낸 이미지(OpenCV image 객체) 딕셔너리
+    """
 	gray = get_gray(imgae_file)
 	# cv2.imshow('gray', gray)
-
-	# canny = get_canny(gray)
-	# cv2.imshow('canny', canny)
 
 	gray1 = get_gradient(gray)
 	# cv2.imshow('gray1', gray1)
@@ -249,10 +275,9 @@ def image_all_process(imgae_file):
 	contours = get_contours(gray3)
 	# print(len(contours["section"]))
 
-	# cv2.imshow('All contours', draw_contour_rect(imgae_file, contours))
-
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+	# cv2.imshow('All contours', draw_contour_rect(imgae_file, contours))\
+	# cv2.waitKey(0)
+	# cv2.destroyAllWindows()
 
 	return get_cropped_images(imgae_file, contours)
 

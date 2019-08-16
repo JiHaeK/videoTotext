@@ -11,7 +11,7 @@ def main():
     # final_result=''
     # d = ct.read_configs('configs.json')
     # # video_path='test_video/amazing_720p.mp4'
-    # # frame_images = vp.extract_image_fps(video_path)
+    # # frame_images = vp.extract_frame_from_video(video_path)
     # frame_images = cv2.imread('test_video/kang4.png')
     # copy = ct.resize(frame_images)
 
@@ -26,7 +26,7 @@ def main():
     fianl_result_array=[]
     section_result_array=[]
     video_path='test_video/amazing_720p.mp4'
-    frame_images = vp.extract_image_fps(video_path)
+    frame_images = vp.extract_frame_from_video(video_path)
     for i, frame in enumerate(frame_images):
         vp.save_image(frame,i)
         final_result=''
