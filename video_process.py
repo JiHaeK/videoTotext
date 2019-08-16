@@ -46,7 +46,7 @@ def save_image(image, count):
 	:param image: 프레임 
 	:param count: 초   
 	"""
-	f_name = 'frame' + str(count)
+	f_name = 'output/frames/frame' + str(count)
 	file_path = f_name + ".jpg"  # complete file name
 	cv2.imwrite(file_path, image)
 

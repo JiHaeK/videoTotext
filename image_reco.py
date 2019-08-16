@@ -4,6 +4,12 @@ import cv2
 import config
 
 def extract_text(tmp_image):
+	""" 이미지에서 글자를 인식합니다. 
+	OCR엔진: tesseract (config에서 사용자 경로를 지정할 수 있습니다)
+
+	:param tmp_image: Opencv 이미지 객체
+	:return: 인식된 결과 (str) 
+	"""		
 	pytesseract.pytesseract.tesseract_cmd = config.RECO_CONFIG['tesseract']
 
 	# image = cv2.imread(tmp_image)

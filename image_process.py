@@ -148,14 +148,11 @@ def get_contours(image):
 		x, y, width, height = cv2.boundingRect(con)
 		if width > min_width and height > min_height:
 			if x < section_x < x+width and y < section_y < y+height:
-				section_contour.append(con)
+				all_contour["section"]=con
 			else:
 				final_contours.append(con)
 	all_contour["contours"]=final_contours
-	all_contour["section"]=section_contour
-	print(len(all_contour["section"]))
 
-	# print(all_contour)
 	return all_contour
 
 def draw_contour_rect(image_origin, contours):
@@ -184,11 +181,11 @@ def draw_contour_rect(image_origin, contours):
 			box = np.int0(box)
 			# print(box[0])
 			cv2.drawContours(rgb_copy, [box], 0, (0, 255, 0), 2)
-		for contour in draw_sectoin:
-			rect = cv2.minAreaRect(draw_sectoin[0])
-			box = cv2.boxPoints(rect)
-			box = np.int0(box)
-			cv2.drawContours(rgb_copy, [box], 0, (0, 0, 255), 2)
+		
+		rect = cv2.minAreaRect(draw_sectoin)
+		box = cv2.boxPoints(rect)
+		box = np.int0(box)
+		cv2.drawContours(rgb_copy, [box], 0, (0, 0, 255), 2)
 			
 	return rgb_copy
 
@@ -213,6 +210,7 @@ def get_cropped_images(image_origin, contours):
 	
 	draw_contour = contours["contours"]
 	draw_section = contours["section"]
+	print('get corpped section: %s' %type(draw_section))
 
 	for contour in draw_contour:  # Crop the screenshot with on bounding rectangles of contours
 		x, y, width, height = cv2.boundingRect(contour)  # top-left vertex coordinates (x,y) , width, height

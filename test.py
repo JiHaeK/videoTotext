@@ -29,14 +29,14 @@ def main():
     frame_images = vp.extract_frame_from_video(video_path)
     for i, frame in enumerate(frame_images):
         vp.save_image(frame,i)
-        final_result=''
+        final_result=[]
         copy = ct.resize(frame)
         cropped_images=ct.image_all_process(copy)
 
         for con in cropped_images["contours"]:
             # ct.save_crooped_contours(con, count)
             result = reco.extract_text(con)
-            final_result = final_result + txt.text_pre_process(result)
+            final_result.append(txt.text_pre_process(result))
         fianl_result_array.append(final_result)
         # print(len(cropped_images["section"]))
         section = reco.extract_text(cropped_images["section"])
