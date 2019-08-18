@@ -6,12 +6,12 @@ IMAGE_CONFIG = {
 	},
 	"gradient": 
 	{
-		"kernel_size_row":2,
-		"kernel_size_col":2
+		"kernel_size_row":3,
+		"kernel_size_col":3
 	},
 	"threshold": 
 	{
-		"mode": "mean",
+		"mode": "gaussian",
 		"block_size":15,
 		"subtract_val": 21
 
@@ -29,7 +29,7 @@ IMAGE_CONFIG = {
 	},
 	"contour":
 	{
-		"min_width": 50,
+		"min_width": 100,
 		"min_height": 15,
 		"section_x": 90,
 		"section_y": 60,
