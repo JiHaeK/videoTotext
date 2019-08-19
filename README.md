@@ -11,7 +11,6 @@
 * OpenCV
 * Tesseract (OCR engine)
 
-<br>
 ## video_process.py
 #### Introduction
 동영상에서 이미지를 추출 하기 위한 처리를 합니다. 
