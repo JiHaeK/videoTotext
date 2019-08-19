@@ -17,7 +17,7 @@
 
 ```
 def extract_frame_from_video(video_path):
-동영상에서 프레임 추출하기 (1frame per 1s)
+#동영상에서 프레임 추출하기 (1frame per 1s)
 	:param video_path: 동영상 경로 
 	:return: 프레임들이 저장되어 있는 배열
 ```
