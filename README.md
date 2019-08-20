@@ -8,8 +8,20 @@
 
 ### 개발환경
 * Python >= 3
-* OpenCV
-* Tesseract (OCR engine)
+* OpenCV 4.1.0.25
+* Tesseract 4.0 (OCR engine)
+* numpy, PIL, 
+* TensorFlow, keras 
+
+
+### 사용방법 
+```
+$ pip install videoTotext
+```
+or
+```
+$ git clone ... 
+```
 
 ## video_process.py
 #### Introduction
