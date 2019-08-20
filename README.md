@@ -20,7 +20,7 @@ $ pip install videoTotext
 ```
 or
 ```
-$ git clone ... 
+$ git clone https://github.com/JiHaeK/videoTotext.git 
 ```
 
 ## video_process.py
