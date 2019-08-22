@@ -39,16 +39,14 @@ def extract_frame_from_video(video_path) :
 	vidcap.release()
 	return frame_images
 
-def save_image(image, count):
+def save_image(image, path):
 	"""
 	추출한 프레임 이미지를 저장합니다. 
 	
 	:param image: 프레임 
 	:param count: 초   
 	"""
-	f_name = 'output/frames/frame' + str(count)
-	file_path = f_name + ".jpg"  # complete file name
-	cv2.imwrite(file_path, image)
+	cv2.imwrite(path, image)
 
 if __name__ == "__main__":
 	pass

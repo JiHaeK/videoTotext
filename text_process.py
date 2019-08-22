@@ -12,13 +12,14 @@ def text_pre_process(result):
 	"""	
 	copy = str(result)
 	copy2 = copy.replace("\n", "")
-	result = re.sub('[^0-9a-zA-Zㄱ-힗]', '', copy2)
+	copy3 = re.sub('[^ㄱ-힗]', '', copy2)
 	# re.sub('[^A-Za-z0-9]', '', copy2)
-	# text = re.sub('[-=+,#}/\{:^$.@*\※~&%ㆍ!『「』\\‘|\(\)\[_ ""\]\<\>`\'…》]', '', copy2)
+	result = re.sub('[-=+,#}/\{:^$.@*\※~&%ㆍ!『「』\\‘|\(\)\[_ ""\]\<\>`\'…》]', '', copy3)
 	# shortword = re.compile(r'\W*\b\w{1,2}\b')
 	# shortword.sub('', result)
 	# text2 = re.sub(r'\d','',result)
-	if result is not None or len(result) > 2:
+	if result is not None and len(result) > 3:
+		# print(result)
 		return result
 
 
@@ -64,3 +65,20 @@ def text_save(final_result, section, path):
 		wr.writerow([j, final_content[j]["start"],  final_content[j]["end"], final_content[j]["section"], final_content[j]["contents"]])
 
 	f.close()
+
+def directory_save(dic, section, path):
+	f = open(path, 'w', encoding='utf-8', newline='')
+	wr = csv.writer(f)
+	wr.writerow(['index', 'start_time', 'end_time', 'section', 'contents'])
+	
+	final_content=[]
+	for k, v in dic.items():
+		d_content={}
+		d_content.update([("start", time.strftime("%H:%M:%S", time.gmtime(int(k)))), 
+				("end", time.strftime("%H:%M:%S", time.gmtime(int(k)+1))) , 
+				('section', section[k]), 
+				("contents", v)])
+		final_content.append(d_content)
+
+	for j in range(0, len(final_content)):
+		wr.writerow([j, final_content[j]["start"],  final_content[j]["end"], final_content[j]["section"], final_content[j]["contents"]])

@@ -24,7 +24,6 @@ def resize(image, flag=-1):
 		rate = standard_height / height
 	elif (flag < 0 and width < standard_width) or (flag < 0 and height > standard_height):  # Resize based on width
 		rate = standard_width / width
-
 	w = round(width * rate) 
 	h = round(height * rate)  
 	image_copy = cv2.resize(image_copy, (w, h))
@@ -80,16 +79,16 @@ def get_threshold(image_gray):
 	elif mode == 'gaussian':
 		image_threshold = cv2.adaptiveThreshold(copy, 255, 
 			cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, block_size, subtract_val)
-	else: 
-		image_threshold = get_otsu_threshold(copy)
+	# else: 
+	# 	image_threshold = get_otsu_threshold(copy)
 
 	return image_threshold
 
-def get_otsu_threshold(image_gray):
-	copy = image_gray.copy()
-	blur = cv2.GaussianBlur(copy, (5, 5), 0)
-	ret3, imgae_otsu = cv2.threshold(copy, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-	return imgae_otsu
+# def get_otsu_threshold(image_gray):
+# 	copy = image_gray.copy()
+# 	blur = cv2.GaussianBlur(copy, (5, 5), 0)
+# 	ret3, imgae_otsu = cv2.threshold(copy, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+# 	return imgae_otsu
 
 
 # def remove_long_line(image_binary):
@@ -146,48 +145,51 @@ def get_contours(image):
 	section_contour=[]
 	for i, con in enumerate(contours) :
 		x, y, width, height = cv2.boundingRect(con)
-		if width > min_width and height > min_height:
+		# area = cv2.contourArea(con)
+		if width > min_width and height > min_height :
 			if x < section_x < x+width and y < section_y < y+height:
-				all_contour["section"]=con
+				section_contour.append(con)
 			else:
 				final_contours.append(con)
 	all_contour["contours"]=final_contours
+	all_contour["section"]=section_contour
+
 
 	return all_contour
 
-def draw_contour_rect(image_origin, contours):
-	""" 사각형의 Contour 를 이미지 위에 그려서 반환합니다.
-    찾은 Contours들의 영역을 감싸는 외각 사각형을 그립니다. 
-	섹션 - 빨간색 사각형, 나머지 - 초록색 사각형
+# def draw_contour_rect(image_origin, contours):
+# 	""" 사각형의 Contour 를 이미지 위에 그려서 반환합니다.
+#     찾은 Contours들의 영역을 감싸는 외각 사각형을 그립니다. 
+# 	섹션 - 빨간색 사각형, 나머지 - 초록색 사각형
 
-    :param image_origin: OpenCV의 image 객체
-    :param contours: 이미지 위에 그릴 contour 딕셔너리
-    :return: 사각형의 Contour 를 그린 이미지
-    """
-	rgb_copy = image_origin.copy()
-	draw_contour = contours["contours"]
-	draw_sectoin = contours["section"]
+#     :param image_origin: OpenCV의 image 객체
+#     :param contours: 이미지 위에 그릴 contour 딕셔너리
+#     :return: 사각형의 Contour 를 그린 이미지
+#     """
+# 	rgb_copy = image_origin.copy()
+# 	draw_contour = contours["contours"]
+# 	draw_sectoin = contours["section"]
 
-	min_width = config.IMAGE_CONFIG['contour']['min_width']
-	min_height = config.IMAGE_CONFIG['contour']['min_height']
+# 	min_width = config.IMAGE_CONFIG['contour']['min_width']
+# 	min_height = config.IMAGE_CONFIG['contour']['min_height']
 
-	if len(draw_contour) == 0:
-		# print('contours: 0')
-		return rgb_copy
-	else : 
-		for contour in draw_contour:
-			rect = cv2.minAreaRect(contour)
-			box = cv2.boxPoints(rect)
-			box = np.int0(box)
-			# print(box[0])
-			cv2.drawContours(rgb_copy, [box], 0, (0, 255, 0), 2)
-		
-		rect = cv2.minAreaRect(draw_sectoin)
-		box = cv2.boxPoints(rect)
-		box = np.int0(box)
-		cv2.drawContours(rgb_copy, [box], 0, (0, 0, 255), 2)
+# 	if len(draw_contour) == 0:
+# 		# print('contours: 0')
+# 		return rgb_copy
+# 	else : 
+# 		for contour in draw_contour:
+# 			rect = cv2.minAreaRect(contour)
+# 			box = cv2.boxPoints(rect)
+# 			box = np.int0(box)
+# 			# print(box[0])
+# 			cv2.drawContours(rgb_copy, [box], 0, (0, 255, 0), 2)
+# 		if len(draw_sectoin) != 0:
+# 			rect = cv2.minAreaRect(draw_sectoin.pop())
+# 			box = cv2.boxPoints(rect)
+# 			box = np.int0(box)
+# 			cv2.drawContours(rgb_copy, [box], 0, (0, 0, 255), 2)
 			
-	return rgb_copy
+# 	return rgb_copy
 
 
 def get_cropped_images(image_origin, contours):
@@ -207,10 +209,9 @@ def get_cropped_images(image_origin, contours):
 	all_cropped={}
 	cropped_images = []
 	cropped_section=[]
-	
 	draw_contour = contours["contours"]
 	draw_section = contours["section"]
-	print('get corpped section: %s' %type(draw_section))
+	# print('get corpped section: %s' %type(draw_section))
 
 	for contour in draw_contour:  # Crop the screenshot with on bounding rectangles of contours
 		x, y, width, height = cv2.boundingRect(contour)  # top-left vertex coordinates (x,y) , width, height
@@ -223,29 +224,36 @@ def get_cropped_images(image_origin, contours):
 		# Crop the image with Numpy Array
 		cropped = image_copy[row_from: row_to, col_from: col_to]
 		cropped_images.append(cropped)  # add to the list
-			
-	x, y, width, height = cv2.boundingRect(draw_section)
-	row_from = (y - padding) if (y - padding) > 0 else y
-	row_to  = (y + height + padding) if (y + height + padding) < origin_height else y + height
-	col_from = (x - padding) if (x - padding) > 0 else x 
-	col_to = (x + width + padding) if (x + width + padding) < origin_width else x + width
-	cropped_section = image_copy[row_from: row_to, col_from: col_to]
+
 	
+	if( len(draw_section) > 0 ):
+		x, y, width, height = cv2.boundingRect(draw_section.pop())
+		# area = cv2.contourArea(draw_section.pop())
+		if width*height > 2500 :
+			cropped_section = image_copy[10: 84, 10: 350]
+		else: 
+			row_from = (y - padding) if (y - padding) > 0 else y
+			row_to  = (y + height + padding) if (y + height + padding) < origin_height else y + height
+			col_from = (x - padding) if (x - padding) > 0 else x 
+			col_to = (x + width + padding) if (x + width + padding) < origin_width else x + width
+			cropped_section = image_copy[row_from: row_to, col_from: col_to]
+	else:
+		cropped_section = image_copy[10: 84, 10: 350]
+
 	all_cropped["contours"]=cropped_images
 	all_cropped["section"]=cropped_section
 	
 	return all_cropped
 
 
-# def save_crooped_contours(image, count):
-# 	""" 잘라낸 Contour 부분들을 저장합니다.
-
-#   :param image: 잘라낸 contour 이미지 
-# 	:param count: 잘라낸 contour 순서 
-# 	"""
-# 	f_name = 'output/contours/contour_' + str(count)
-# 	file_path = f_name + ".jpg"  # complete file name
-# 	cv2.imwrite(file_path, image)
+def save_crooped_contours(image, path):
+	""" 잘라낸 Contour 부분들을 저장합니다.
+	:param image: 잘라낸 contour 이미지 
+	:param count: 잘라낸 contour 순서 
+	"""
+	f_name = path 
+	file_path = f_name + ".jpg"  # complete file name
+	cv2.imwrite(file_path, image)
 	
 
 
@@ -272,12 +280,18 @@ def image_all_process(imgae_file):
 
 	contours = get_contours(gray3)
 	# print(len(contours["section"]))
-
-	# cv2.imshow('All contours', draw_contour_rect(imgae_file, contours))\
+	
+	# cv2.imshow('All contours', draw_contour_rect(imgae_file, contours))
 	# cv2.waitKey(0)
 	# cv2.destroyAllWindows()
+	origin = get_cropped_images(imgae_file, contours)
+	gray = get_cropped_images(gray, contours)
+	final =[]
+	final.append(origin)
+	final.append(gray)
 
-	return get_cropped_images(imgae_file, contours)
+	return final
+
 
 if __name__ == '__main__':
 	pass

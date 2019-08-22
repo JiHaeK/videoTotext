@@ -31,8 +31,8 @@ IMAGE_CONFIG = {
 	{
 		"min_width": 100,
 		"min_height": 15,
-		"section_x": 90,
-		"section_y": 60,
+		"section_x": 100,
+		"section_y": 50,
 		"padding": 2
 	}
 }
