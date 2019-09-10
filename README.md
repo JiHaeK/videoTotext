@@ -7,7 +7,7 @@
 * OCR 엔진을 통해 글자이미지에서 TEXT 추출
 
 ### 개발환경
-* Python >= 3
+* Python 3.x
 * OpenCV 4.1.0.25
 * Tesseract 4.0 (OCR engine)
 * numpy, PIL, 
