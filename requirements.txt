@@ -6,6 +6,6 @@ opencv-python~=3.4.0.12
 
 pytesseract==0.2.0
 
-tensorflow==1.12.2
+tensorflow==2.9.3
 
 
